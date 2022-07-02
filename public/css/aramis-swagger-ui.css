@@ -1,0 +1,26 @@
+header:before {
+    content:"";
+    background:linear-gradient(90deg,#28c6d5,#0060a7);
+    color:#ffffff;
+}
+
+.swagger-ui .scheme-container {
+    display:none;
+}
+#swagger-ui.api-platform .info .title {
+    color:#0060a7;
+}
+#swagger-ui.api-platform .opblock-tag {
+    padding:2px 0;
+    margin:0 0 5px;
+}
+#swagger-ui.api-platform .opblock {
+    margin:0 0 5px;
+}
+
+header #logo {
+    right:60px;
+}
+header #logo img {
+    background-color:transparent;
+}

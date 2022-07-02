@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-3">
+            <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
+                <div class="position-sticky">
+                    <div class="list-group list-group-flush mx-3 mt-4">
+                        {% for gender in genders.genders %}
+                            <a href="{{ path('app_gender', {'genderId': gender.id ~ '-' ~ gender.name|lower }) }}"
+                               class="list-group-item list-group-item-action py-2 ripple{% if genderId|default(null) == gender.id %} active{% endif %}">
+                                <span>{{ gender.name }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="col">
+            {% for movie in movies.movies %}
+                <div class="movie card mt-3 p-3">
+                    <div class="row g-0">
+                        <div class="col-md-3">
+                            <img src="https://image.tmdb.org/t/p/w220_and_h330_face{{ movie.backdropPath }}"
+                                 class="img-fluid rounded-start">
+                        </div>
+                        <div class="col-md">
+                            <div class="card-body">
+                                <h3 class="card-title">{{ movie.title }}</h3>
+                                {{ _self.stars(movie.voteAverage) }}
+                                <small class="text-muted movie-voteCount mb-1">({{ movie.voteCount }} votes)</small>
+                                <p class="card-text"><strong><span class="movie-year">{{ movie.year }}</span> -
+                                    <span class="movie-genders">{% for genreId in movie.genreIds %}
+                                        {{ genders.getGender(genreId).name }}{% if not loop.last %},{% endif %}
+                                    {% endfor %}</span></strong>
+                                </p>
+                                <p class="card-text">{{ movie.overview|length > 250 ? movie.overview|slice(0, 250) ~ '...' : movie.overview }}
+                                </p>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button data-bs-toggle="modal"
+                                            data-bs-target="#movie-modal"
+                                            data-bs-movie-title="{{ movie.title }}"
+                                            data-bs-movie-overview="{{ movie.overview }}"
+                                            data-bs-movie-voteAverage="{{ movie.voteAverage }}"
+                                            data-bs-movie-voteCount="{{ movie.voteCount }}"
+                                            data-bs-movie-video-url="{% if movie.trailer %}{{ movie.trailer.url }}{% endif %}"
+                                            data-bs-movie-video-title="{% if movie.trailer %}{{ movie.trailer.title }}{% endif %}"
+                                            class="btn btn-primary rounded-pill movie-details px-5">
+                                        Lire le détails
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                Pas de résultat
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="modal fade" id="movie-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <iframe width="100%" height="463px" class="movie-video-url" src=""></iframe>
+                    <h2 class="movie-video-title"></h2>
+                    <strong>Film : <span class="movie-title"></span></strong><br/>
+                    {{ _self.stars(0) }} <span class="movie-voteAverage"></span> pour <span class="movie-voteCount"></span> utilisateurs<br/>
+                    <strong>Synopsis :</strong>
+                    <p class="movie-overview"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('movie-modal')
+        modal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget
+            const list = ['title', 'voteAverage', 'voteCount', "video-title", "overview"]
+
+            list.forEach((item, index) => {
+                modal.querySelector('.movie-' + item).textContent = button.getAttribute('data-bs-movie-' + item)
+            })
+
+            modal.querySelector('.movie-video-url').setAttribute('src', button.getAttribute('data-bs-movie-video-url'))
+
+            let voteAverage = button.getAttribute('data-bs-movie-voteAverage')
+            modal.querySelectorAll('.star').forEach((item, index) => {
+                if (Math.round(voteAverage / 2) === index + 1) {
+                    item.classList.add("selected")
+                    console.log(item, index, voteAverage, item.classList)
+                } else {
+                    console.log(index)
+                    item.classList.remove("selected")
+                }
+            })
+        })
+        modal.addEventListener('hidden.bs.modal', event => {
+            console.log("ssssssssssssss")
+        })
+    </script>
+{% endblock %}
+
+{% macro stars(voteAverage) %}
+    <ul class="ratings">
+        {% for i in range(1, 5) %}
+            <li class="star {% if (voteAverage / 2)|round == i %}selected{% endif %}"></li>
+        {% endfor %}
+    </ul>
+{% endmacro %}

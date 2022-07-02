@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  dbgp-proxy:
+    external:
+      name: dbgp-proxy
+  proxy:
+    external:
+      name: proxy
+  we-movies:
+
+services:
+  php_fpm:
+    build:
+      context: .
+      dockerfile: docker/php/fpm/dev/Dockerfile
+    environment:
+      - TMDB_api_Key=${TMDB_api_Key}
+      - TMDB_base_uri=https://api.themoviedb.org/3/
+    networks:
+      - dbgp-proxy
+      - we-movies
+    volumes:
+      - ./:/usr/local/src/app
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/dev/Dockerfile
+      args:
+        PHPFPM_SERVICE: php_fpm
+        CORS_HEADER: '.*' # TODO Replace this by a regex
+    depends_on:
+      - php_fpm
+    networks:
+      - proxy
+      - we-movies
+    ports:
+      - "80:80"
+    volumes:
+      - ./public:/usr/local/src/app/public

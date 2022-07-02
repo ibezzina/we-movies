@@ -1,0 +1,53 @@
+@import "~bootstrap/scss/bootstrap";
+
+.movie {
+    max-height: 332px;
+    background-color: #f7f6f6
+}
+
+.movie img {
+    max-height: 294px;
+}
+
+.movie .movie-year {
+    font-size: 22px
+}
+
+.movie .movie-genders {
+    color: #1ca2eb
+}
+
+.ratings {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+    display: inline;
+}
+
+.star {
+    position: relative;
+    line-height: 30px;
+    display: inline-block;
+    transition: color 0.2s ease;
+    color: #1ca2eb;
+}
+
+.star:before {
+    content: '\2605';
+    width: 300px;
+    height: 30px;
+    font-size: 30px;
+}
+
+.star.selected ~ .star {
+    transition: color 0.8s ease;
+    color: #d8d8d8;
+}
+
+.modal .movie-voteAverage {
+    background-color: #444;
+    color: #EEE;
+    padding: 1px 5px 1px 5px;
+}
